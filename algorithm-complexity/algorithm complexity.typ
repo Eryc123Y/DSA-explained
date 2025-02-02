@@ -10,12 +10,12 @@
   title: "Algotithm Complexity",
   subtitle: [],
   author: "Xingyu Yang",
-  abstract: "Before we start to learn about DSAs (algorithm and Datastructures), we need to first understand the concept of algorithm, data structure, and their complexity, which is the main focus of this part.",
+  abstract: "Before we start to learn about DSAs (algorithm and Datastructures), we need to first understand the concept of algorithm, data structure, and their complexity, which is the main focus of this section.",
 )
 
 #outline()
 
-#pagebreak()
+//#pagebreak()
 
 = Defining Algorithm and Data Structure
 It is always important to understand the basic concepts before we start to learn about the more advanced topics. In this part, we will first introduce the concept of algorithm and data structure, and then we will discuss the complexity of algorithms and data structures.
