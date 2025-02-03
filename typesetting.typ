@@ -44,9 +44,9 @@
  titlefmt: strong,
 )
 
-#let remark = thmplain(
- "remark",
- "Remark",
- base: "theorem",
- titlefmt: strong,
+#let remark = thmbox(
+  "remark",
+  "Remark",
+  fill: rgb("#f8e8e8"),
+  titlefmt: strong,
 ).with(numbering: none)
