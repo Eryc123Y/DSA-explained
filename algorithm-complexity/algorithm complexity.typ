@@ -321,15 +321,32 @@ The measure of the overheads of an algorithm is ALWAYS taken in terms of the inp
 
 Why does input size matter? We can illustrate using function graphs.
 
-#cetz.canvas({
- import cetz.draw: *
- import cetz-plot: *
- plot.plot(size: (2,2), x-tick-step: none, y-tick-step: none, {
- plot.add(((0,0), (1,1), (2,.5), (4,3)))
-})
-})
+#figure(
+    align(center)[
+        #cetz.canvas({
+                import cetz.draw: *
+                import cetz-plot: *
+                plot.plot(size: (6,3), x-tick-step: 2, y-tick-step: 4, {
+                        plot.add(domain: (0.1, 4), x => x * calc.log(x, base: 2))
+                        plot.add(domain: (0.1, 4), x => x)
+                        plot.add-legend([$f(x)=x$], preview:() => line((0,0), (1,1), stroke: red))
+                        plot.add-legend([$f(x)=x log x$], preview: () => line((0,0), (1,1), stroke: blue))
+                })
+                
+        })
+    ],
+)
+
+As we can see, the function $f(x) = x$ grows linearly with the input size $x$, while the function $f(x) = x log x$ grows logarithmically with the input size $x$. It's obvious that they intersect at $x approx 2$. Now we take the function value as algorithm complexity, and it can be interpreted that when input size is less than 2, the linear algorithm is more efficient, while when input size is larger than 2, the logarithmic algorithm is more efficient. This basic example shows why input size always matters in the analysis of algorithm complexity. Because we cannot find something like a one-size-fits-all algorithm that is always the most efficient, we also need to consider the input size and other limitations/constraintswhen we choose an algorithm to solve a problem.
+
 
 == Time Complexity
+
+=== Worst-case Time Complexity (Big-O Notation)
+
+=== Best-case Time Complexity (Big-Omega Notation)
+
+=== Average-case Time Complexity (Big-Theta Notation)
 
 == Space Complexity
 
