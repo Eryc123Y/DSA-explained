@@ -7,6 +7,16 @@
 #import "@preview/codly-languages:0.1.6": *
 #import "@preview/cetz:0.3.2"
 #import "@preview/cetz-plot:0.1.1"
+#import "@preview/equate:0.3.0": *
+#import "@preview/quick-maths:0.2.0": *
+#import "@preview/lovelace:0.3.0": *
+
+#show: shorthands.with(
+  ($+-$, $plus.minus$),
+  ($|-$, math.tack),
+)
+
+#show: equate.with(breakable: true, sub-numbering: true)
 
 #show: dvdtyp.with(
   title: "Preliminary Concepts of Algorithm and Data Structure",
@@ -34,7 +44,7 @@
 It is always important to understand the basic concepts before we start to learn about the more advanced topics. In this part, we will first introduce the concept of algorithm and data structure, and then we will discuss the complexity of algorithms and data structures.
 
 == Algorithm
-What is algorithm? The answer may varie even among the computer scientists, since definition can be quite board as long as they fit into most part of the big picture. However, we can define algorithm as a set of instructions that are used to solve a problem or perform a task. In other words, an algorithm is a step-by-step procedure that is used to solve a problem or perform a task. 
+What is algorithm? The answer may varie even among the computer scientists, since definition can be quite board as long as they fit into most part of the big picture. However, we can define algorithm, in general sense, as a set of instructions that are used to solve a problem or perform a task. In other words, an algorithm is a step-by-step procedure that is used to solve a problem or perform a task. 
 Formally, in rigorous mathematical language, we have the following definition.
 
 #definition([Algorithm])[Algorithm is a *finite* sequence of *well-defined*, *computer-implementable* instructions, typically to solve a class of problems or to perform a computation. 
@@ -296,7 +306,7 @@ implement a class `Dog` from an abstract class `Animal`.
                 print("Woof! Woof!")
 
         # The other class Cat
-        class Cat(animal):
+        class Cat(Animal):
             def __init__(self, name: str, age: int):
                 """
                 Constructor for the Cat class. Inherited from the Animal class.
@@ -310,17 +320,10 @@ implement a class `Dog` from an abstract class `Animal`.
 
     This example how abstract class and methods works in python. If we do not implement any one of the abstract methods in the subclass, the python interpreter will refuse to instantiate the subclass object and raise an error. Using abstract class and abstract methods is in most cases a good practice in OOP, since it can help us to design the class hierarchy more clearly and stipulate the behaviors of the subclasses.
 
-= Naive Notion of Algorithm Complexity
-The other aspect that is crucial for understanding algorithms and data structures is the complexity of algorithms.
-
-#definition([Algorithm Complexity])[
-    Algorithm complexity is a measure of the efficiency of an algorithm in terms of the resources it consumes, such as time and space. It quantifies the performance of an algorithm by analyzing its behavior as the input size grows, providing insights into how the algorithm scales with larger datasets.
-]
-
-The measure of the overheads of an algorithm is ALWAYS taken in terms of the input size, which varies in different cases. The running overheads in analysed in two aspects: time and space. The time complexity of an algorithm is the amount of time it takes to run as a function of the input size, while the space complexity is the amount of memory it requires to run as a function of the input size. The time complexity is usually measured in terms of the number of elementary operations performed by the algorithm, such as comparisons, assignments, and arithmetic operations. 
+sured in terms of the number of elementary operations performed by the algorithm, such as comparisons, assignments, and arithmetic operations. 
 
 Why does input size matter? We can illustrate using function graphs.
-
+can you write a typst definition environment on the definition of general algorithm time complexity without using too much formal definitions in math?
 #figure(
     align(center)[
         #cetz.canvas({
@@ -342,12 +345,100 @@ As we can see, the function $f(x) = x$ grows linearly with the input size $x$, w
 
 == Time Complexity
 
+The previous section gives the brief intro to algorithm complexity, and we will now discuss the time complexity in more detail. The time complexity of an algorithm is a measure of the amount of time it takes to run as a function of the input size. Well, it could be a bit vague, since some may believe that we really bechmark algorithm based on the actual time it takes to run, but it is not the case. The time complexity is usually measured in terms of the number of elementary operations performed by the algorithm, such as comparisons, assignments, and arithmetic operations. We take the assumption that the time taken for each elementary operation is constant, and all machines deal with the same elementary operations in the same amount of time#footnote[But not literally the same, since the performance of different machine differs, however, the computing overheads are very tiny so that the gap is trivial and can be ignored.]. 
+
+#definition([Time Complexity])[
+    The *time complexity* describes how the running time of the algorithm grows as the size of the input increases.  It can be expressed using different notations given varied purposes, which provides an upper bound, lower bound or average performance of the algorithm. 
+
+    Mathematically, time complexity can be defined as a function $T: A times x -> F(x)$, where $A$ is the set of all algorithms#footnote[This is not rigorous if we are using a axiomatic set theory system, while we only use naive set theory to explain the notion.], $n$ is the input size,and $F(x)$ is the set of possible functions with $x$ as input, normally, $F(x) = {1, x^n, n^x, log_n (x), ln(x), x log_n (x), x!}$, where $n in NN^+$, $x$ is the input size of the algorithm. We have time complexity $T(a) = f(n)$ for $a in A$ and $f(n) in F(n)$ when the input size of $a$ is $n$.
+]
+
+This could be a bit abstract, but this is not really the common time complexity definition we use in practice. In the real practice, we add another layer of abstraction to the time complexity, bechmarking algorithms in different aspects, such as the worst-case, best-case, and average-case time complexity. We will discuss them in the following sections.
+
+#let text_4 = "Let's Consider the example of liearn search, a simple algorithm that searches for a target element in an array. The pseudocode of the linear search algorithm is shown along size. We simply designate a target element and traverse the array from the beginning to the end, comparing each element with the target. If the target is found, we return the index of the element; otherwise, we return -1 to indicate that the target is not in the array. Now we will analyze the time complexity of the linear search algorithm."
+
+#let fig_4 = figure(
+  kind: "algorithm",
+  supplement: [Algorithm],
+
+  pseudocode-list(booktabs: true, title: [*Linear Search*])[
+  + *for* i = 0 to n - 1:
+    + *if* arr[i] == target *then*:
+      + *return* i  // Target found at index i
+    + *end*
+  + *end*
+  + *return* -1 // Target not found in the array
+  ]
+)
+
+#wrap-content(fig_4, text_4, align: top + left, column-gutter: 3em)
+#example[To figure out the time complexity of the linear search, we first need to determine, which metadata decides the input size of the algorithm. Obviously, in this algorithm we only traverse the array linearly, which means the input size of the algorithm is the length of the array. Therefore, we denote the input size as $n$, and the time complexity of the linear search algorithm is $n$, where $n$ is the length of the array.]
+
+Now we look at a slightly different example, which is also related to Linear Search.
+ #codly(languages: codly-languages)
+ ```py
+def linear_search(arr: List[int], target: int) -> int:
+    """
+    Linear search algorithm to find the target element in the array.
+    """
+    for i in range(len(arr)):
+        if arr[i] == target:
+            return i  # Target found at index i
+    return -1  # Target not found in the array
+
+    target = 5
+    target_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    print(linear_search(target_list, target))  # Output: 4
+ ```
+
+ #problem[What is the time compelxity of the linear search algorithm in 
+ this call?]
+ The answer is constant function, $f(n)=1$, but not linear function, $f(n)=n$. The reason is that the length of the array is fixed here, instead of being a variable. Therefore, the time complexity of the linear search algorithm in this call is constant. The same goes for a given array of length 100,000, because the length of the array is fixed. This example may confuse some people, but noworries, we will explicately discuss the worst-case, best-case, and average-case time complexity in the following sections using linear search as an example.
+
 === Worst-case Time Complexity (Big-O Notation)
+As we said, when we evaluate the time complexity of an algorithm, we usually take certain considerations, and the most common one is how bad the algorithm can perform. This is called the worst-case time complexity, which provides an upper bound on the running time of the algorithm. We use big-O notation to represent the worst-case time complexity, for example, $O(n)$, $O(n^2)$, $O(log n)$, etc. 
+
+#definition([Big-O Notation])[By assuming the input of an algorithm is of variable size $n$, we use big-O notation to analyse the assymptotic upper bound of the time complexity when $n -> infinity$. We state that, in the worst case, the time complexity $T(n)$ of an algorithm with input size $n$ has $T(n) = O(g(n))$, if
+$ exists (c >0 and r in NN^+ ) "such that" forall n>r, 0 <= f(n ) <= c dot g(n), $ 
+where $f(n)$ is the exact time complexity of the algorithm, and $g(n)$ is the upper bound of the time complexity.
+
+In natural language, we say that the time complexity of the algorithm is $O(g(n))$ if there exists a constant $c$ and a positive integer $r$ such that, for all input sizes $n$ greater than $r$, the time complexity of the algorithm is bounded above by $c dot g(n)$.]
+
+Still, we just use linear search as an example, though it's a quite special, because its actual worst-case time complexity is exactly the same as the big-O notation, while this does not always happen in other algorithms. We will see more examples in the future.
+
+#example[For the linear search algorithm, the worst-case time complexity is $O(n)$, where $n$ is the length of the array. This is because, we have $f(n) = n$, and $g(n) = n$, when $c=1$, $forall n in NN^+$, $ 0 <= f(n) <= 1 dot g(n). $]
+
+In this case, we have more than what we need to know about the worst-case time complexity, because we need only $forall n > r$, $0 <= f(n) <= c dot g(n)$,  however we have $forall n in NN^+$, $0 <= f(n) <= c dot g(n)$. This is decided by the nature of the linear search algorithm, which is quite simple and straightforward. However, again, this is not always the case, and we will see more examples in the future.
 
 === Best-case Time Complexity (Big-Omega Notation)
+Opposite to the worst-case time complexity, we have the best-case time complexity, which provides a lower bound on the running time of the algorithm. We use big-Omega notation to represent the best-case time complexity, for example, $Omega(n)$, $Omega(n^2)$, $Omega(log n)$, etc.
 
+#definition([Big-Omega Notation])[By assuming the input of an algorithm is of variable size $n$, we use big-Omega notation to analyse the assymptotic lower bound of the time complexity when $n -> infinity$. We state that, in the best case, the time complexity $T(n)$ of an algorithm with input size $n$ has $T(n) = Omega(g(n))$, if
+$ exists (c >0 and r in NN^+ ) "such that" forall n>r, f(n ) >= c dot g(n), $
+where $f(n)$ is the exact time complexity of the algorithm, and $g(n)$ is the upper bound of the time complexity.
+
+In natural language, we say that the time complexity of the algorithm is $Omega(g(n))$ if there exists a constant $c$ and a positive integer $r$ such that, for all input sizes $n$ greater than $r$, the time complexity of the algorithm is bounded below by $c dot g(n)$.]
+
+Again, we use linear search as an example to illustrate the best-case time complexity.
+
+#example[For the linear search algorithm, the best-case time complexity is $Omega(1)$, which means that the best-case time complexity is constant. This is because, we have $f(n) = 1$, and $g(n) = 1$, when $c=1$, $forall n in NN^+$, $ f(n) >= 1 dot g(n). $]
 === Average-case Time Complexity (Big-Theta Notation)
 
+
+#definition([Average Time Complexity])[
+  Let $I(n)$ be the set of all input instances of size $n$, and let $T(n, x)$ denote the running time of an algorithm on input $x$ in $I(n)$. Suppose there is a probability distribution $P(x)$ over these inputs for example, the uniform distribution, meaning that for all $x in I(n)$ we have
+  $
+  P(x)=1/(|I(n)|).
+  $
+   Then the average running time is defined as
+  $
+  T_"avg"(n)= sum_{x in I(n)} P(x) dot T(n,x).
+  $
+  In the case where every input is equally likely, this expression simplifies to
+  $
+  T_"avg"(n)= 1/(|I(n)|) sum_{x in I(n)}T(n,x).
+  $
+]
 == Space Complexity
 
-= Algorithm Complexity Rigorously Explained#footnote[This is optional, only for math lovers! Recommended for those who know function set, and analysis well.]
+= Algorithm Complexity Rigorously Explained#footnote[This is optional, only for math lovers! Recommended for those who know function, set, and analysis well.]
