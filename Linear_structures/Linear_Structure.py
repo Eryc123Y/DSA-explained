@@ -37,6 +37,17 @@ class Linear_structure(ABC, Generic[T]):
 
     @abstractmethod
     def index(self, element: T) -> int:
+        """
+        Returns the index of the first occurrence of the element in the linear structure.
+        returns -1 if the element is not in the linear structure.
+        """
+        pass
+
+    @abstractmethod
+    def insert(self, index: int, element: T) -> None:
+        """
+        Inserts an element at the given index.
+        """
         pass
 
     @abstractmethod
@@ -73,6 +84,12 @@ class Linear_structure(ABC, Generic[T]):
         Returns an iterator for the linear structure.
         """
         pass
+
+    def __contains__(self, element: T) -> bool:
+        """
+        Returns True if the element is in the linear structure.
+        """
+        return self.index(element) != -1
 
     @abstractmethod
     def __str__(self):
