@@ -24,3 +24,7 @@ class BubbleSort(Sort):
                     ln_struct[j], ln_struct[j+1] = ln_struct[j+1], ln_struct[j]
         if reverse:
             ln_struct.reverse()
+            
+            
+            
+            
