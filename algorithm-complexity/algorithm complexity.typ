@@ -432,13 +432,24 @@ Again, we use linear search as an example to illustrate the best-case time compl
   $
    Then the average running time is defined as
   $
-  T_"avg"(n)= sum_{x in I(n)} P(x) dot T(n,x).
+  T_"avg" (n)= sum_{x in I(n)} P(x) dot T(n,x).
   $
   In the case where every input is equally likely, this expression simplifies to
   $
-  T_"avg"(n)= 1/(|I(n)|) sum_{x in I(n)}T(n,x).
+  T_"avg" (n)= 1/(|I(n)|) sum_{x in I(n)}T(n,x).
   $
+
+  We say that an algorithm has an average-case time complexity of $Theta(g(n))$ if there exist positive constants $c_1$ and $c_2$ and a function $f(n)$ such that, for all sufficiently large $n$, the average running time of the algorithm on inputs of size $n$ is bounded above and below by $c_1 dot g(n)$ and $c_2 dot g(n)$, respectively. In other words, the average-case time complexity is $Theta(g(n))$ if there exist constants $c_1$, $c_2$, and $n_0$ such that, for all $n >= n_0$, we have $ c_1 dot g(n) <= T_"avg" (n) <= c_2 dot g(n). $
 ]
+
+Average-case analysis is a more realistic measure of an algorithm's performance, yet it is also more complex to determine than the worst-case or best-case time complexity. It requires knowledge of the probability distribution of inputs and the expected running time of the algorithm on each input. 
+
+To make it easier to understand, we can say that average time complexity, in probability theory, is the expected value of the time complexity of the algorithm, given a probability distribution of inputs, which is usually uniform by default.
+
+Now we will discuss the average-case time complexity of the linear search algorithm, as an example for average-case analysis.
+
+#example[For the linear search algorithm, the average-case time complexity is $Theta(n)$, which means that the average-case time complexity is linear. This is because, we have $f(n) = n$, and $g(n) = n$, when $c=1$, $forall n in NN^+$, $ 0 <= f(n) <= 1 dot g(n). $]
+
 == Space Complexity
 
 = Algorithm Complexity Rigorously Explained#footnote[This is optional, only for math lovers! Recommended for those who know function, set, and analysis well.]

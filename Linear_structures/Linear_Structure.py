@@ -104,3 +104,10 @@ class Linear_structure(ABC, Generic[T]):
         Removes all elements from the linear structure.
         """
         pass
+    
+    @abstractmethod
+    def reverse(self) -> None:
+        """
+        Reverses the linear structure.
+        """
+        pass

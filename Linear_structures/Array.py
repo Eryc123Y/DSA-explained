@@ -77,6 +77,9 @@ class Array(Linear_structure, Generic[T]):
         self.array[self.size - 1] = None
         self.size -= 1
 
+    def __contains__(self, element: T) -> bool:
+        return self.index(element) != -1
+    
     def __iter__(self) -> Iterator[T]:
         for i in range(self.size):
             yield self.array[i]
@@ -87,6 +90,10 @@ class Array(Linear_structure, Generic[T]):
     def clear(self) -> None:
         self.array = [None] * self._capacity
         self.size = 0
+        
+    def reverse(self):
+        for i in range(self.size//2):
+            self.array[i], self.array[self.size - i - 1] = self.array[self.size - i - 1], self.array[i]
 
 
 class TestArray(unittest.TestCase):
