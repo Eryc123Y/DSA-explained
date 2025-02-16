@@ -1,14 +1,16 @@
 from Sort import Sort
-from Linear_structures import Linear_Structure
-from typing import TypeVar, List, Callable, Any
+from typing import TypeVar, List, Callable, Any, Iterable
+from Linear_Structures.Vector import Vector
 
 T = TypeVar('T')
+
+
 class BubbleSort(Sort):
     """
     Bubble sort algorithm.
     """
-    
-    def sort(self, ln_struct: Linear_Structure[T], key: Callable = lambda x: x, reverse: bool = False) -> None:
+
+    def sort(self, ln_struct: Iterable[T], key: Callable = lambda x: x, reverse: bool = False) -> None:
         """
         Sorts a linear structure in ascending order.
         
@@ -18,13 +20,15 @@ class BubbleSort(Sort):
         reverse: If True, the structure is sorted in descending order.
         """
         n = len(ln_struct)
+        # we need to keep reference to the left of unsorted part of the list
         for i in range(n):
-            for j in range(0, n-i-1):
-                if key(ln_struct[j]) > key(ln_struct[j+1]):
-                    ln_struct[j], ln_struct[j+1] = ln_struct[j+1], ln_struct[j]
+            # n-1 is the last index, -i here is to avoid comparing the last i elements
+            # as they are already sorted, thus n-i-1 is the right boundary of the unsorted part
+            for j in range(0, n - i - 1):
+                if key(ln_struct[j]) > key(ln_struct[j + 1]):
+                    swop(ln_struct, j, j + 1)
         if reverse:
             ln_struct.reverse()
-            
-            
-            
-            
+
+
+

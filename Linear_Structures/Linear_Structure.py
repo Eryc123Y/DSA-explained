@@ -84,7 +84,8 @@ class Linear_structure(ABC, Generic[T]):
         Returns an iterator for the linear structure.
         """
         pass
-
+    
+    @abstractmethod
     def __contains__(self, element: T) -> bool:
         """
         Returns True if the element is in the linear structure.

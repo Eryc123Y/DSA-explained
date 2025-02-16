@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Iterator, Generic, Optional, Iterable
 from ctypes import py_object
-from Linear_Structure import Linear_structure
+from Linear_Structures.Linear_Structure import Linear_structure
 import unittest
 
 T = TypeVar('T')

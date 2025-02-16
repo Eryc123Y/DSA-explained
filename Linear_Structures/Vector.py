@@ -1,5 +1,5 @@
 from typing import TypeVar, Optional, Iterable, Generic
-from Array import Array
+from Linear_Structures.Array import Array
 import unittest
 
 T = TypeVar('T')
@@ -68,7 +68,16 @@ class Vector(Array, Generic[T]):
         return str([self.array[i] for i in range(self.size) if self.array[i] is not None])
     
         
-
+    def __eq__(self, other: 'Vector[T]') -> bool:
+        """
+        Returns True if two vectors are equal.
+        """
+        if self.size != other.size:
+            return False
+        for i in range(self.size):
+            if self.array[i] != other.array[i]:
+                return False
+        return True
 
 class TestVector(unittest.TestCase):
 
