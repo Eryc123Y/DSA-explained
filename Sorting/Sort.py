@@ -40,4 +40,7 @@ class Sort(ABC):
         """
         Swops two elements in a linear structure.
         """
-        ln_struct[i], ln_struct[j] = ln_struct[j], ln_struct[i]
+        temp = ln_struct[i]
+        ln_struct[i] = ln_struct[j]
+        ln_struct[j] = temp
+        # or in a pythonic way: ln_struct[i], ln_struct[j] = ln_struct[j], ln_struct[i]

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import TypeVar, Iterator, Generic
+from typing import TypeVar, Iterator, Generic, Optional, Iterable
 from ctypes import py_object
 from Linear_Structure import Linear_structure
 import unittest
@@ -8,13 +8,39 @@ T = TypeVar('T')
 
 
 class Array(Linear_structure, Generic[T]):
+    def __init__(self, capacity: int = 0, elements: Optional[Iterable[T]] = None):
+        """
+        Initialize an Array with a given capacity or with a list of elements.
 
-    def __init__(self, capacity: int = 10) -> None:
+        Parameters:
+            capacity (int): The maximum number of elements the array can hold.
+            elements (Optional[Any[T]]): Any iterable of elements to populate the array.
+        """
         super().__init__()
-        self._capacity = capacity
-        # initialize the array with None
+        
+        # Validate inputs
+        if capacity < 0:
+            raise ValueError("Capacity cannot be negative.")
+        
+        # Determine capacity based on input
+        if elements is not None:
+            # If elements are provided, set capacity to max(capacity, len(elements))
+            self._capacity = max(capacity, len(elements))
+        else:
+            # Otherwise, use the provided capacity
+            self._capacity = capacity
+
+        # Initialize internal storage
         self.array = (py_object * self._capacity)()
-        self.array = [None] * self._capacity
+        for i in range(self._capacity):
+            self.array[i] = None
+        self.size = 0
+
+        # Populate the array with initial elements, if provided
+        if elements is not None:
+            for i in range(len(elements)):
+                self.array[i] = elements[i]
+            self.size = len(elements)
 
     def is_full(self) -> bool:
         return self.size == self._capacity
@@ -30,8 +56,12 @@ class Array(Linear_structure, Generic[T]):
         """
         Removes and returns the last element of the linear structure.
         """
-        del self.array[self.size - 1]
+        if self.size == 0:
+            raise IndexError("pop from empty array")
+        element = self.array[self.size - 1]
+        self.array[self.size - 1] = None  # Clear the reference instead of using del
         self.size -= 1
+        return element
 
     def index(self, element: T) -> int:
         """
@@ -44,16 +74,13 @@ class Array(Linear_structure, Generic[T]):
         return -1
 
     def insert(self, index: int, element: T) -> None:
-        if index >= self.size or index < 0:
+        if index < 0 or index > self.size:
             raise IndexError("Index out of range")
-        try:
-            for i in range(index, self.size):
-                # shuffling elements on the right of the index to the right
-                self.array[i + 1] = self.array[i]
-                self.array[index] = element
-        except IndexError:
-            raise IndexError("Index out of range")
-
+        # Shift elements one position to the right (from the end to index)
+        for i in range(self.size - 1, index - 1, -1):
+            self.array[i + 1] = self.array[i]
+        # Insert the new element
+        self.array[index] = element
         self.size += 1
 
     def __len__(self) -> int:
@@ -67,7 +94,6 @@ class Array(Linear_structure, Generic[T]):
 
     def __setitem__(self, index: int, element: T) -> None:
         self.array[index] = element
-        self.size += 1
 
     def __delitem__(self, index: int) -> None:
         if index >= self.size - 1:
@@ -85,7 +111,7 @@ class Array(Linear_structure, Generic[T]):
             yield self.array[i]
 
     def __str__(self):
-        return str(self.array)
+        return str([self.array[i] for i in range(self.size)])
 
     def clear(self) -> None:
         self.array = [None] * self._capacity
@@ -175,7 +201,7 @@ class TestArray(unittest.TestCase):
     def test_str(self):
         self.array.append(1)
         self.array.append(2)
-        expected_str = "[1, 2, None, None, None]"
+        expected_str = "[1, 2]"
         self.assertEqual(str(self.array), expected_str)
 
     def test_clear(self):
@@ -195,5 +221,8 @@ class TestArray(unittest.TestCase):
         #self.assertTrue(self.array.is_full()) #This is not what is expected.
 
 
+
+
 if __name__ == '__main__':
     unittest.main()
+
