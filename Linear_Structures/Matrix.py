@@ -5,43 +5,43 @@ import unittest
 
 T = TypeVar('T')
 
+
 class Matrix(Linear_structure[T], Generic[T]):
     """
     Class for matrices.
     """
-    
-    def __init__(self, fill_val: Optional[T] = None, rows: Optional[int] = None , \
-        cols: Optional[int] = None, elements: Optional[Iterable[Iterable[T]]] = None) -> None:
-        
+
+    def __init__(self, fill_val: Optional[T] = None, rows: Optional[int] = None,
+                 cols: Optional[int] = None, elements: Optional[Iterable[Iterable[T]]] = None) -> None:
+
         if any(len(vec) != len(elements[0]) for vec in elements):
             raise ValueError('All rows must have the same length.')
-        
+
         if elements is not None:
             self._matrix = [Vector(row) for row in elements]
             self.num_rows = len(elements)
             self.num_cols = len(elements[0])
-            
+
         elif rows is not None and cols is not None:
-            self._matrix = [Vector([fill_val]*cols) for _ in range(rows)]
+            self._matrix = [Vector([fill_val] * cols) for _ in range(rows)]
             self.num_rows = rows
             self.num_cols = cols
-        
+
         else:
             raise ValueError('You must provide either elements or rows and cols.')
-        
+
     def append(self, vec: Vector[T]) -> None:
         if len(vec) != self.num_cols:
             raise ValueError('The vector must have the same length as the number of columns.')
         self._matrix.append(vec)
         self.num_rows += 1
 
-    
     def pop(self) -> Vector[T]:
         return self._matrix.pop()
-    
+
     def index(self, vec: Vector[T]) -> int:
         return self._matrix.index(vec)
-    
+
     def insert(self, other: Union[Vector[T], "Matrix[T]"], axis: int = 0) -> None:
         """
         Concatenates another matrix or vector to this matrix.
@@ -66,7 +66,7 @@ class Matrix(Linear_structure[T], Generic[T]):
                 self.num_rows += other.num_rows
             else:
                 raise TypeError("Other must be a Vector or Matrix.")
-        
+
         elif axis == 1:
             # Horizontal concatenation: merge columns.
             if isinstance(other, Vector):
@@ -86,17 +86,17 @@ class Matrix(Linear_structure[T], Generic[T]):
                 self.num_cols += other.num_cols
             else:
                 raise TypeError("Other must be a Vector or Matrix.")
-        
+
         else:
             raise ValueError("Axis must be 0 (vertical) or 1 (horizontal).")
-        
+
     def __len__(self) -> int:
         return self.num_rows
-    
+
     @property
     def dims(self) -> Tuple[int, int]:
         return self.num_rows, self.num_cols
-    
+
     def __getitem__(self, index: Union[int, Tuple[int, int]]) -> Union[Vector[T], T]:
         if isinstance(index, int):
             return self._matrix[index]
@@ -104,7 +104,7 @@ class Matrix(Linear_structure[T], Generic[T]):
             return self._matrix[index[0]][index[1]]
         else:
             raise TypeError("Index must be an integer or a tuple of integers.")
-        
+
     def __setitem__(self, index: Union[int, Tuple[int, int]], value: Union[Vector[T], T]) -> None:
         if isinstance(index, int):
             self._matrix[index] = value
@@ -112,7 +112,7 @@ class Matrix(Linear_structure[T], Generic[T]):
             self._matrix[index[0]][index[1]] = value
         else:
             raise TypeError("Index must be an integer or a tuple of integers.")
-    
+
     def __delitem__(self, index: Union[int, Tuple[int, int]]) -> None:
         if isinstance(index, int):
             del self._matrix[index]
@@ -122,10 +122,10 @@ class Matrix(Linear_structure[T], Generic[T]):
             self.num_cols -= 1
         else:
             raise TypeError("Index must be an integer or a tuple of integers.")
-        
+
     def __iter__(self) -> Iterable[Vector[T]]:
         return iter(self._matrix)
-    
+
     def __contains__(self, other: Union[Vector[T], T]) -> bool:
         if isinstance(other, Vector):
             return any(other == vec for vec in self._matrix)
@@ -133,7 +133,7 @@ class Matrix(Linear_structure[T], Generic[T]):
             return any(other in vec for vec in self._matrix)
         else:
             return False
-        
+
     def index(self, other: Union[Vector[T], T]) -> Tuple[int, int]:
         if isinstance(other, Vector):
             return self._matrix.index(other)
@@ -144,18 +144,18 @@ class Matrix(Linear_structure[T], Generic[T]):
             raise ValueError(f"{other} not found in matrix.")
         else:
             raise TypeError("Other must be a Vector or an element.")
-        
+
     def __str__(self) -> str:
         return '\n'.join(str(vec) for vec in self._matrix)
-    
+
     def __eq__(self, other: "Matrix[T]") -> bool:
-        return self._matrix == other._matrix # eq is implemented in Vector
-    
+        return self._matrix == other._matrix  # eq is implemented in Vector
+
     def clear(self) -> None:
         self._matrix = Vector()
         self.num_rows = 0
         self.num_cols = 0
-        
+
     def reverse(self, order_by: int = 0) -> None:
         """
         Reverses the order of the rows or columns.
@@ -170,13 +170,13 @@ class Matrix(Linear_structure[T], Generic[T]):
                 vec.reverse()
         else:
             raise ValueError("Order_by must be 0 (rows) or 1 (columns).")
-        
+
     def transpose(self) -> "Matrix[T]":
         """
         Returns the transpose of the matrix.
         """
         return Matrix(elements=[[self._matrix[j][i] for j in range(self.num_rows)] for i in range(self.num_cols)])
-    
+
     def minor(self, row: int, col: int) -> "Matrix[T]":
         """
         Returns the minor of the matrix.
@@ -184,8 +184,10 @@ class Matrix(Linear_structure[T], Generic[T]):
             row: row index
             col: column index 
         """
-        return Matrix(elements=[[self._matrix[i][j] for j in range(self.num_cols) if j != col] for i in range(self.num_rows) if i != row])
-    
+        return Matrix(
+            elements=[[self._matrix[i][j] for j in range(self.num_cols) if j != col] for i in range(self.num_rows) if
+                      i != row])
+
     def determinant(self) -> T:
         """
         Returns the determinant of the matrix.
@@ -201,18 +203,18 @@ class Matrix(Linear_structure[T], Generic[T]):
             for j in range(self.num_cols):
                 det += self[0, j] * self.cofactor(0, j)
             return det
-        
+
     def cofactor(self, row: int, col: int) -> T:
         """
         Returns the cofactor of the matrix.
         """
         sign = (-1) ** (row + col)
         return sign * self.minor(row, col).determinant()
-    
+
     def adjoint(self) -> "Matrix[T]":
         cofactors = [[self.cofactor(i, j) for j in range(self.num_cols)] for i in range(self.num_rows)]
         return Matrix(elements=cofactors).transpose()
-    
+
     def inverse(self) -> "Matrix[T]":
         """
         Returns the inverse of the matrix.
@@ -222,19 +224,20 @@ class Matrix(Linear_structure[T], Generic[T]):
             raise ValueError("The matrix is singular (non-invertible).")
         if self.num_rows != self.num_cols:
             raise ValueError("The matrix must be square.")
-        return self.adjoint() * (1/det)
-        
-    
+        return self.adjoint() * (1 / det)
+
     def __add__(self, other: "Matrix[T]") -> "Matrix[T]":
         if self.num_rows != other.num_rows or self.num_cols != other.num_cols:
             raise ValueError("Matrices must have the same dimensions.")
-        return Matrix(elements=[[self._matrix[i][j] + other._matrix[i][j] for j in range(self.num_cols)] for i in range(self.num_rows)])
-    
+        return Matrix(elements=[[self._matrix[i][j] + other._matrix[i][j] for j in range(self.num_cols)] for i in
+                                range(self.num_rows)])
+
     def __sub__(self, other: "Matrix[T]") -> "Matrix[T]":
         if self.num_rows != other.num_rows or self.num_cols != other.num_cols:
             raise ValueError("Matrices must have the same dimensions.")
-        return Matrix(elements=[[self._matrix[i][j] - other._matrix[i][j] for j in range(self.num_cols)] for i in range(self.num_rows)])
-    
+        return Matrix(elements=[[self._matrix[i][j] - other._matrix[i][j] for j in range(self.num_cols)] for i in
+                                range(self.num_rows)])
+
     def __mul__(self, other: Union["Matrix[T]", T]) -> "Matrix[T]":
         if isinstance(other, Matrix):
             # Perform matrix multiplication if dimensions are valid.
@@ -264,10 +267,7 @@ class Matrix(Linear_structure[T], Generic[T]):
 
         else:
             raise TypeError("Other must be a Matrix or an element.")
-        
 
-import unittest
-from Matrix import Matrix
 
 class TestMatrix(unittest.TestCase):
 
@@ -349,6 +349,7 @@ class TestMatrix(unittest.TestCase):
         M_scaled = M * 3
         self.assertEqual(M_scaled[0, 0], 3)
         self.assertEqual(M_scaled[1, 1], 12)
+
 
 if __name__ == '__main__':
     unittest.main()

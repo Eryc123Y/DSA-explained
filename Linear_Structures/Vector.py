@@ -4,11 +4,12 @@ import unittest
 
 T = TypeVar('T')
 
+
 class Vector(Array, Generic[T]):
     """
     Vector class for dynamic arrays.
     """
-    
+
     def __init__(self, elements: Optional[Iterable[T]] = None):
         """
         Initialize a Vector with a list of elements.
@@ -16,15 +17,15 @@ class Vector(Array, Generic[T]):
         Parameters:
             elements (Optional[list[T]]): A list of initial elements to populate the vector.
         """
-        super().__init__(elements = elements)
-        
+        super().__init__(elements=elements)
+
     def _expand(self) -> None:
         """
         Expands the capacity of the vector, when it is full.
         """
         new_capacity = self._capacity * 2
         # Pass only the valid elements instead of self.array directly.
-        new_elements = self.array[:self.size] # exclude None values
+        new_elements = self.array[:self.size]  # exclude None values
         self.array = Array(new_capacity, elements=new_elements)
         self._capacity = new_capacity
 
@@ -33,10 +34,10 @@ class Vector(Array, Generic[T]):
         Shrinks the capacity of the vector, when it is less than half full.
         """
         new_capacity = self._capacity // 2
-        new_elements = self.array[:self.size] # exclude None values
+        new_elements = self.array[:self.size]  # exclude None values
         self.array = Array(new_capacity, elements=new_elements)
         self._capacity = new_capacity
-        
+
     def append(self, element: T) -> None:
         """
         Appends an element to the vector.
@@ -44,7 +45,7 @@ class Vector(Array, Generic[T]):
         if self.is_full():
             self._expand()
         super().append(element)
-        
+
     def pop(self) -> T:
         """
         Removes and returns the last element of the vector.
@@ -52,7 +53,7 @@ class Vector(Array, Generic[T]):
         if self.size <= self._capacity // 4:
             self._shrink()
         return super().pop()
-    
+
     def insert(self, index: int, element: T) -> None:
         """
         Inserts an element at the given index.
@@ -60,14 +61,13 @@ class Vector(Array, Generic[T]):
         if self.is_full():
             self._expand()
         super().insert(index, element)
-        
+
     def __str__(self) -> str:
         """
         Returns a string representation of the vector.
         """
         return str([self.array[i] for i in range(self.size) if self.array[i] is not None])
-    
-        
+
     def __eq__(self, other: 'Vector[T]') -> bool:
         """
         Returns True if two vectors are equal.
@@ -78,6 +78,7 @@ class Vector(Array, Generic[T]):
             if self.array[i] != other.array[i]:
                 return False
         return True
+
 
 class TestVector(unittest.TestCase):
 
@@ -95,7 +96,7 @@ class TestVector(unittest.TestCase):
         self.assertEqual(self.vector[3], 4)
         # If the vector was full before appending, _expand() should have been called
         if old_capacity == 3:
-            self.assertGreater(self.vector._capacity, 3, 
+            self.assertGreater(self.vector._capacity, 3,
                                "Expected capacity expansion when appending to a full vector.")
 
     def test_pop(self):
@@ -135,6 +136,6 @@ class TestVector(unittest.TestCase):
         self.assertLess(vect._capacity, original_capacity * 2,
                         "Expected capacity to shrink after many pops.")
 
+
 if __name__ == '__main__':
     unittest.main()
-    
