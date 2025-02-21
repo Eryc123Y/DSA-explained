@@ -45,7 +45,7 @@ def shell_sort(ln_struct: Iterable[T], key: Callable = lambda x: x, reverse: boo
                 # If reverse is False, we want ascending order
                 if (key(ln_struct[j - gap]) > key(ln_struct[j])) != reverse:
                     # Swap elements if they are in wrong order
-                    swap(ln_struct, j - gap, j)
+                    ln_struct[j - gap], ln_struct[j] = ln_struct[j], ln_struct[j-gap]
                     j -= gap
                 else:
                     # If elements are in correct order, stop the inner loop

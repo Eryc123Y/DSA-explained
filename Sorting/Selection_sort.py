@@ -25,12 +25,12 @@ def Selection_sort(ln_struct: Iterable[T], key: Callable = lambda x: x, reverse:
     n = len(ln_struct)
     # keep reference to the left of unsorted part of the list
     for i in range(n):
-        # find the index of the minimum element in the unsorted part
-        min_index = i
+        # find the index of the minimum/maximum element in the unsorted part
+        extreme_index = i
         for j in range(i + 1, n):
             # if reverse, we find the maximum element
             # if not reverse, we find the minimum element
-            if (key(ln_struct[j]) < key(ln_struct[min_index])) != reverse:
-                min_index = j
-        # swap the minimum element with the leftmost element of the unsorted part
-        swap(ln_struct, i, min_index)
+            if (key(ln_struct[j]) < key(ln_struct[extreme_index])) != reverse:
+                extreme_index = j
+        # swap the minimum/maximum element with the leftmost element of the unsorted part
+        swap(ln_struct, i, extreme_index)
