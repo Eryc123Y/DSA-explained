@@ -1,4 +1,4 @@
-from typing import TypeVar, Iterator, Generic, Optional, Iterable
+from typing import TypeVar, Iterator, Optional, Iterable
 from Linked_list import Linked_list
 import unittest
 
