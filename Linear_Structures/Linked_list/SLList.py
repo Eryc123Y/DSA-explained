@@ -1,5 +1,5 @@
 from typing import TypeVar, Iterator, Optional, Iterable
-from Linked_list import Linked_list
+from .Linked_list import Linked_list
 import unittest
 
 T = TypeVar('T')
@@ -97,10 +97,13 @@ class SLList(Linked_list):
             current = current.next
         return current
 
-    def __getitem__(self, index: int) -> T:
-        """
-        Returns the element at the given index.
-        """
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            start, stop, step = index.indices(self.size)
+            result = SLList()
+            for i in range(start, stop, step):
+                result.append(self._traverse_helper(i).data)
+            return result
         if index < 0:
             index += self.size
         return self._traverse_helper(index).data

@@ -1,5 +1,5 @@
 from typing import TypeVar
-from SLList import SLList
+from .SLList import SLList
 import unittest
 
 T = TypeVar('T')
