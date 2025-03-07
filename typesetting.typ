@@ -1,11 +1,11 @@
 #import "@preview/ctheorems:1.1.3": *
-#import "@preview/gentle-clues:1.1.0"
-#import "@preview/quick-maths:0.2.0"
+#import "@preview/gentle-clues:1.2.0"
+#import "@preview/quick-maths:0.2.1"
 #import "@preview/stack-pointer:0.1.0"
 #import "@preview/mitex:0.2.5"
-#import "@preview/algo:0.3.4"
+#import "@preview/algo:0.3.5"
 #import "@preview/codedis:0.1.0"
-#import "@preview/physica:0.9.3": *
+#import "@preview/physica:0.9.5": *
 #import "@preview/codly:1.2.0"
 #show: thmrules
 

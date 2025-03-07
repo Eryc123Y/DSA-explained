@@ -1,4 +1,4 @@
-#import "@preview/dvdtyp:1.0.0": *
+#import "@preview/dvdtyp:1.0.1": *
 
 #show: dvdtyp.with(
   title: "dvd.typ",
