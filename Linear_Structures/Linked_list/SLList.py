@@ -59,7 +59,7 @@ class SLList(Linked_list):
         del self[-1]
         return elem
 
-    def index(self, element: T) -> int:
+    def index_of(self, element: T) -> int:
         i = 0
         for item in self:
             if item == element:
@@ -182,8 +182,8 @@ class TestSLList(unittest.TestCase):
         self.assertEqual(len(self.list), 2)
 
     def test_index(self):
-        self.assertEqual(self.list.index(2), 1)
-        self.assertEqual(self.list.index(4), -1)
+        self.assertEqual(self.list.index_of(2), 1)
+        self.assertEqual(self.list.index_of(4), -1)
 
     def test_insert(self):
         self.list.insert(1, 5)

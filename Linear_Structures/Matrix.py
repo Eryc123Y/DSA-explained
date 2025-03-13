@@ -39,8 +39,8 @@ class Matrix(Linear_structure[T], Generic[T]):
     def pop(self) -> Vector[T]:
         return self._matrix.pop()
 
-    def index(self, vec: Vector[T]) -> int:
-        return self._matrix.index(vec)
+    def index_of(self, vec: Vector[T]) -> int:
+        return self._matrix.index_of(vec)
 
     def insert(self, other: Union[Vector[T], "Matrix[T]"], axis: int = 0) -> None:
         """
@@ -134,13 +134,13 @@ class Matrix(Linear_structure[T], Generic[T]):
         else:
             return False
 
-    def index(self, other: Union[Vector[T], T]) -> Tuple[int, int]:
+    def index_of(self, other: Union[Vector[T], T]) -> Tuple[int, int]:
         if isinstance(other, Vector):
-            return self._matrix.index(other)
+            return self._matrix.index_of(other)
         elif isinstance(other, T):
             for i, vec in enumerate(self._matrix):
                 if other in vec:
-                    return i, vec.index(other)
+                    return i, vec.index_of(other)
             raise ValueError(f"{other} not found in matrix.")
         else:
             raise TypeError("Other must be a Vector or an element.")

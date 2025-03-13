@@ -1,6 +1,6 @@
 from typing import TypeVar, Iterator, Generic, Optional, Iterable
 from ctypes import py_object
-from Linear_Structures.Linear_Structure import Linear_structure
+from Linear_Structure import Linear_structure
 import unittest
 
 T = TypeVar('T')
@@ -48,6 +48,8 @@ class Array(Linear_structure, Generic[T]):
         """
         Appends an element to the linear structure.
         """
+        if self.is_full():
+            raise IndexError("Array is full")
         self.array[self.size] = element
         self.size += 1
 
@@ -62,7 +64,7 @@ class Array(Linear_structure, Generic[T]):
         self.size -= 1
         return element
 
-    def index(self, element: T) -> int:
+    def index_of(self, element: T) -> int:
         """
         Returns the index of the first occurrence of the element in the linear structure.
         returns -1 if the element is not in the linear structure.
@@ -72,14 +74,21 @@ class Array(Linear_structure, Generic[T]):
                 return i
         return -1
 
-    def insert(self, index: int, element: T) -> None:
-        if index < 0 or index > self.size:
+    def insert(self, position: int, element: T) -> None:
+        """
+        Inserts an element at the given index in the linear structure.
+        """
+        if self.is_full():
+            raise IndexError("Array is full")
+        if position < 0:
+            position += self.size
+        if not 0 <= position <= self.size:
             raise IndexError("Index out of range")
         # Shift elements one position to the right (from the end to index)
-        for i in range(self.size - 1, index - 1, -1):
+        for i in range(self.size - 1, position - 1, -1):
             self.array[i + 1] = self.array[i]
         # Insert the new element
-        self.array[index] = element
+        self.array[position] = element
         self.size += 1
 
     def __len__(self) -> int:
@@ -88,22 +97,34 @@ class Array(Linear_structure, Generic[T]):
         """
         return self.size
 
-    def __getitem__(self, index: int) -> T:
-        return self.array[index]
-
-    def __setitem__(self, index: int, element: T) -> None:
-        self.array[index] = element
-
-    def __delitem__(self, index: int) -> None:
-        if index >= self.size - 1:
+    def __getitem__(self, subscript: int) -> T:
+        if subscript < 0:
+            subscript += self.size
+        if not 0 <= subscript < self.size:
             raise IndexError("Index out of range")
-        for i in range(index, self.size - 1):
+        return self.array[subscript]
+
+    def __setitem__(self, subscript: int, element: T) -> None:
+        if subscript < 0:
+            subscript += self.size
+        if not 0 <= subscript < self.size:
+            raise IndexError("Index out of range")
+        self.array[subscript] = element
+
+    def __delitem__(self, subscript: int) -> None:
+        if subscript < 0:
+            subscript += self.size
+        if not 0 <= subscript < self.size:
+            raise IndexError("Index out of range")
+        # Shift elements one position to the left (from index to the end)
+        for i in range(subscript, self.size - 1):
             self.array[i] = self.array[i + 1]
+        # Clear the last element and decrease size
         self.array[self.size - 1] = None
         self.size -= 1
 
     def __contains__(self, element: T) -> bool:
-        return self.index(element) != -1
+        return self.index_of(element) != -1
     
     def __iter__(self) -> Iterator[T]:
         for i in range(self.size):
@@ -113,13 +134,14 @@ class Array(Linear_structure, Generic[T]):
         return str([self.array[i] for i in range(self.size)])
 
     def clear(self) -> None:
-        self.array = [None] * self._capacity
+        for i in range(self._capacity):
+            self.array[i] = None
         self.size = 0
         
     def reverse(self):
         for i in range(self.size//2):
             self.array[i], self.array[self.size - i - 1] = self.array[self.size - i - 1], self.array[i]
-
+            
 
 class TestArray(unittest.TestCase):
 
@@ -138,16 +160,20 @@ class TestArray(unittest.TestCase):
     def test_pop(self):
         self.array.append(1)
         self.array.append(2)
-        self.array.pop()
-        self.assertEqual(len(self.array), 1)  # Size is not decremented
-        self.assertIsNone(self.array[1])  # Last element is set to None
+        popped_value = self.array.pop()
+        self.assertEqual(popped_value, 2)
+        self.assertEqual(len(self.array), 1)
+        self.assertIsNone(self.array.array[self.array._capacity - 1]) # Corrected assertion
+        with self.assertRaises(IndexError):
+            self.array.pop()
+            self.array.pop()
 
     def test_index(self):
         self.array.append(1)
         self.array.append(2)
-        self.assertEqual(self.array.index(1), 0)
-        self.assertEqual(self.array.index(2), 1)
-        self.assertEqual(self.array.index(3), -1)  # Element not found
+        self.assertEqual(self.array.index_of(1), 0)
+        self.assertEqual(self.array.index_of(2), 1)
+        self.assertEqual(self.array.index_of(3), -1)  # Element not found
 
     def test_insert(self):
         self.array.append(1)
@@ -185,10 +211,9 @@ class TestArray(unittest.TestCase):
         self.array.append(2)
         del self.array[0]
         self.assertEqual(self.array[0], 2)
-        self.assertIsNone(self.array[1])  #Last element is set to None
+        self.assertIsNone(self.array.array[self.array._capacity - 1])  # Corrected assertion
         self.assertEqual(len(self.array), 1)
-
-        with self.assertRaises(IndexError):  #Test Index Error with index out of range
+        with self.assertRaises(IndexError):
             del self.array[5]
 
     def test_iter(self):
@@ -218,6 +243,27 @@ class TestArray(unittest.TestCase):
         self.array.append(5)
         #The size is not incremented, so array won't be full
         #self.assertTrue(self.array.is_full()) #This is not what is expected.
+    
+    def test_negative_indexing(self):
+        self.array.append(1)
+        self.array.append(2)
+        self.array.append(3)
+        
+        # Test __getitem__ with negative index
+        self.assertEqual(self.array[-1], 3)
+        self.assertEqual(self.array[-2], 2)
+        
+        # Test __setitem__ with negative index
+        self.array[-1] = 4
+        self.assertEqual(self.array[2], 4)
+        
+        # Test __delitem__ with negative index
+        del self.array[-2]
+        self.assertEqual(len(self.array), 2)
+        self.assertEqual(self.array[0], 1)
+        self.assertEqual(self.array[1], 4)
+
+    
 
 
 

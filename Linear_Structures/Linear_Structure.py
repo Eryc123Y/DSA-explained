@@ -32,11 +32,8 @@ class Linear_structure(ABC, Generic[T]):
         """
         pass
 
-    def size(self) -> int:
-        return self.size
-
     @abstractmethod
-    def index(self, element: T) -> int:
+    def index_of(self, element: T) -> int:
         """
         Returns the index of the first occurrence of the element in the linear structure.
         returns -1 if the element is not in the linear structure.
@@ -44,7 +41,7 @@ class Linear_structure(ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def insert(self, index: int, element: T) -> None:
+    def insert(self, position: int, element: T) -> None:
         """
         Inserts an element at the given index.
         """
@@ -90,10 +87,10 @@ class Linear_structure(ABC, Generic[T]):
         """
         Returns True if the element is in the linear structure.
         """
-        return self.index(element) != -1
+        return self.index_of(element) != -1
 
     @abstractmethod
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Returns a string representation of the linear structure.
         """

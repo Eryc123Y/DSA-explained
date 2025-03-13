@@ -1,5 +1,5 @@
 from typing import TypeVar, Optional, Iterable, Generic
-from Linear_Structures.Array import Array
+from Array import Array
 import unittest
 
 T = TypeVar('T')
@@ -25,18 +25,22 @@ class Vector(Array, Generic[T]):
         """
         new_capacity = self._capacity * 2
         # Pass only the valid elements instead of self.array directly.
-        new_elements = self.array[:self.size]  # exclude None values
-        self.array = Array(new_capacity, elements=new_elements)
+        new_elements = [self.array[i] for i in range(self.size)]
+        new_array = Array(new_capacity, elements=new_elements)
+        self.array = new_array.array
         self._capacity = new_capacity
+        self.size = len(new_elements)
 
     def _shrink(self) -> None:
         """
         Shrinks the capacity of the vector, when it is less than half full.
         """
         new_capacity = self._capacity // 2
-        new_elements = self.array[:self.size]  # exclude None values
-        self.array = Array(new_capacity, elements=new_elements)
+        # Use list comprehension instead of slice notation
+        new_elements = [self.array[i] for i in range(self.size)]
+        self.array = Array(new_capacity, elements=new_elements).array
         self._capacity = new_capacity
+        self.size = len(new_elements)
 
     def append(self, element: T) -> None:
         """
@@ -68,10 +72,12 @@ class Vector(Array, Generic[T]):
         """
         return str([self.array[i] for i in range(self.size) if self.array[i] is not None])
 
-    def __eq__(self, other: 'Vector[T]') -> bool:
+    def __eq__(self, other: object) -> bool:
         """
         Returns True if two vectors are equal.
         """
+        if not isinstance(other, Vector):
+            return NotImplemented
         if self.size != other.size:
             return False
         for i in range(self.size):
