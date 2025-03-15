@@ -24,7 +24,7 @@ class List_stack(Stack, Generic[T]):
             self.stack.pop()
         else:
             self.stack = Vector(elements)
-            self.size = len(elements)
+            self._size = len(elements)
 
     def push(self, item: T) -> None:
         """
@@ -55,7 +55,7 @@ class List_stack(Stack, Generic[T]):
         return self.push(element)
 
     def index_of(self, element: T) -> int:
-        for i in range(self.size):
+        for i in range(self._size):
             if self.stack[i] == element:
                 return i
         return -1
@@ -89,7 +89,7 @@ class List_stack(Stack, Generic[T]):
         Clears the stack.
         """
         self.stack.clear()
-        self.size = 0
+        self._size = 0
 
     def reverse(self) -> None:
         self.stack.reverse()
