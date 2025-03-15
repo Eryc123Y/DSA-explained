@@ -1,4 +1,4 @@
-from typing import TypeVar, Iterator, Generic, Optional, Iterable
+from typing import TypeVar, Iterator, Generic, Optional, Collection
 from ctypes import py_object
 from .Linear_Structure import Linear_structure
 import unittest
@@ -7,7 +7,7 @@ T = TypeVar('T')
 
 
 class Array(Linear_structure, Generic[T]):
-    def __init__(self, capacity: int = 0, elements: Optional[Iterable[T]] = None):
+    def __init__(self, capacity: int = 0, elements: Optional[Collection[T]] = None):
         """
         Initialize an Array with a given capacity or with a list of elements.
 

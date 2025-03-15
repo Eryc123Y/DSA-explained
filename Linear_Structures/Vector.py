@@ -1,4 +1,4 @@
-from typing import TypeVar, Optional, Iterable, Generic
+from typing import TypeVar, Optional, Generic, Collection
 from .Array import Array
 import unittest
 
@@ -10,7 +10,7 @@ class Vector(Array, Generic[T]):
     Vector class for dynamic arrays.
     """
 
-    def __init__(self, elements: Optional[Iterable[T]] = None):
+    def __init__(self, elements: Optional[Collection[T]] = None):
         """
         Initialize a Vector with a list of elements.
         
