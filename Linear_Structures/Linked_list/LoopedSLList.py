@@ -24,7 +24,7 @@ class LoopedSLList(SLList):
             return '[]'
         result = []
         current = self.head
-        for _ in range(self.size):
+        for _ in range(self._size):
             result.append(str(current.data))
             current = current.next
         return '[' + ', '.join(result) + ']'

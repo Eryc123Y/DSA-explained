@@ -1,11 +1,11 @@
-from typing import TypeVar, Iterator, Optional, Iterable
+from typing import TypeVar, Iterator, Optional, Iterable, Collection, Generic, Union
 from .Linked_list import Linked_list
 import unittest
 
 T = TypeVar('T')
 
 
-class Node:
+class Node(Generic[T]):
     """
     Node class for linked lists.
     """
@@ -21,9 +21,9 @@ class Node:
         self.next = None
 
 
-class SLList(Linked_list):
+class SLList(Linked_list, Generic[T]):
 
-    def __init__(self, elements: Optional[Iterable[T]] = None):
+    def __init__(self, elements: Optional[Collection[T]] = None):
         """
         Initialize a singly linked list with a list of elements.
 
@@ -34,7 +34,7 @@ class SLList(Linked_list):
         if elements:
             for element in elements:
                 self.append(element)
-            self.size = len(elements)
+            self._size = len(elements)
 
     def append(self, element: T) -> None:
         """
@@ -50,7 +50,7 @@ class SLList(Linked_list):
         else:
             self.tail.next = new_node
             self.tail = new_node
-        self.size += 1
+        self._size += 1
 
     def pop(self) -> T:
         if self.is_empty():
@@ -71,7 +71,7 @@ class SLList(Linked_list):
         """
         Insert an element at the given index.
         """
-        if index < 0 or index > self.size:
+        if index < 0 or index > self._size:
             raise IndexError("Index out of range.")
         new_node = Node(element)
         if index == 0:
@@ -81,44 +81,74 @@ class SLList(Linked_list):
             target = self._traverse_helper(index - 1)
             new_node.next = target.next
             target.next = new_node
-        self.size += 1
+        self._size += 1
 
     def __len__(self) -> int:
-        return self.size
+        return self._size
 
     def _traverse_helper(self, index: int) -> Node:
         """
         A built-in helper method to traverse the singly linked list and get the node at the given index.
         """
-        if index < -self.size or index >= self.size:
+        if index < -self._size or index >= self._size:
             raise IndexError("Index out of range.")
         current = self.head
         for i in range(index):
             current = current.next
         return current
 
-    def __getitem__(self, index):
-        if isinstance(index, slice):
-            start, stop, step = index.indices(self.size)
+    def __getitem__(self, interval: Union[int, slice]) -> Union[T, 'SLList[T]']:
+        """
+        Get an item or slice from the linked list.
+
+        Args:
+            interval: Integer index or slice object
+
+        Returns:
+            Single item or new linked list with sliced items
+
+        Raises:
+            IndexError: If index is out of range
+        """
+        # Handle slices
+        if isinstance(interval, slice):
+            start, stop, step = interval.indices(self._size)
             result = SLList()
-            for i in range(start, stop, step):
-                result.append(self._traverse_helper(i).data)
+
+            # Optimization for forward traversal with step=1
+            if start < stop and step == 1:
+                current = self.head
+                # Skip to start position
+                for _ in range(start):
+                    current = current.next
+                # Collect items sequentially
+                for _ in range(stop - start):
+                    result.append(current.data)
+                    current = current.next
+            else:
+                # For reverse or stepped slices
+                for i in range(start, stop, step):
+                    result.append(self._traverse_helper(i).data)
+
             return result
-        if index < 0:
-            index += self.size
-        return self._traverse_helper(index).data
+
+        # Handle single index access
+        if interval < 0:
+            interval += self._size
+
+        return self._traverse_helper(interval).data
 
     def __setitem__(self, index: int, element: T) -> None:
         """
         Set the element at the given index.
         """
         if index < 0:
-            index += self.size
+            index += self._size
         self._traverse_helper(index).data = element
 
     def __delitem__(self, index: int) -> None:
         if index < 0:
-            index += self.size
+            index += self._size
 
         if index == 0:
             self.head = self.head.next
@@ -129,7 +159,7 @@ class SLList(Linked_list):
             target.next = target.next.next
             if target.next is None:
                 self.tail = target
-        self.size -= 1
+        self._size -= 1
 
     def __iter__(self) -> Iterator[T]:
         current = self.head
@@ -145,12 +175,12 @@ class SLList(Linked_list):
         return False
 
     def __str__(self):
-        return '[' + ', '.join(str(item) for item in self) + ']' if self.size > 0 else '[]'
+        return '[' + ', '.join(str(item) for item in self) + ']' if self._size > 0 else '[]'
 
     def clear(self) -> None:
         self.head = None
         self.tail = None
-        self.size = 0
+        self._size = 0
 
     def reverse(self) -> None:
         if len(self) == 1 or self.is_empty():
