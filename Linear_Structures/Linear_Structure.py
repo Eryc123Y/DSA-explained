@@ -10,13 +10,13 @@ class Linear_structure(ABC, Generic[T]):
     """
 
     def __init__(self) -> None:
-        self.size = 0
+        self._size = 0
 
     def is_empty(self) -> bool:
         """
         Returns True if the linear structure is empty.
         """
-        return self.size == 0
+        return self._size == 0
 
     @abstractmethod
     def append(self, element: T) -> None:

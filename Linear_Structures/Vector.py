@@ -1,5 +1,5 @@
 from typing import TypeVar, Optional, Iterable, Generic
-from Array import Array
+from .Array import Array
 import unittest
 
 T = TypeVar('T')
@@ -25,11 +25,11 @@ class Vector(Array, Generic[T]):
         """
         new_capacity = self._capacity * 2
         # Pass only the valid elements instead of self.array directly.
-        new_elements = [self.array[i] for i in range(self.size)]
+        new_elements = [self.array[i] for i in range(self._size)]
         new_array = Array(new_capacity, elements=new_elements)
         self.array = new_array.array
         self._capacity = new_capacity
-        self.size = len(new_elements)
+        self._size = len(new_elements)
 
     def _shrink(self) -> None:
         """
@@ -37,10 +37,10 @@ class Vector(Array, Generic[T]):
         """
         new_capacity = self._capacity // 2
         # Use list comprehension instead of slice notation
-        new_elements = [self.array[i] for i in range(self.size)]
+        new_elements = [self.array[i] for i in range(self._size)]
         self.array = Array(new_capacity, elements=new_elements).array
         self._capacity = new_capacity
-        self.size = len(new_elements)
+        self._size = len(new_elements)
 
     def append(self, element: T) -> None:
         """
@@ -54,7 +54,9 @@ class Vector(Array, Generic[T]):
         """
         Removes and returns the last element of the vector.
         """
-        if self.size <= self._capacity // 4:
+        if self.is_empty():
+            raise IndexError("pop from empty vector")
+        if self._size <= self._capacity // 4:
             self._shrink()
         return super().pop()
 
@@ -70,7 +72,7 @@ class Vector(Array, Generic[T]):
         """
         Returns a string representation of the vector.
         """
-        return str([self.array[i] for i in range(self.size) if self.array[i] is not None])
+        return str([self.array[i] for i in range(self._size) if self.array[i] is not None])
 
     def __eq__(self, other: object) -> bool:
         """
@@ -78,9 +80,9 @@ class Vector(Array, Generic[T]):
         """
         if not isinstance(other, Vector):
             return NotImplemented
-        if self.size != other.size:
+        if self._size != other._size:
             return False
-        for i in range(self.size):
+        for i in range(self._size):
             if self.array[i] != other.array[i]:
                 return False
         return True
@@ -98,7 +100,7 @@ class TestVector(unittest.TestCase):
         # Append an element and check that the element is added and size increases
         old_capacity = self.vector._capacity
         self.vector.append(4)
-        self.assertEqual(self.vector.size, 4)
+        self.assertEqual(self.vector._size, 4)
         self.assertEqual(self.vector[3], 4)
         # If the vector was full before appending, _expand() should have been called
         if old_capacity == 3:
@@ -109,7 +111,7 @@ class TestVector(unittest.TestCase):
         # Test that pop returns the last element and decrements size.
         last_elem = self.vector.pop()
         self.assertEqual(last_elem, 3)
-        self.assertEqual(self.vector.size, 2)
+        self.assertEqual(self.vector._size, 2)
         # Optionally, if vector down-sizing (_shrink) is triggered, capacity will decrease.
         # You could force that scenario by appending many elements and then popping many.
 
@@ -117,7 +119,7 @@ class TestVector(unittest.TestCase):
         # Insert a new element in the middle and verify that new element exists at that index.
         self.vector.insert(1, 99)
         self.assertEqual(self.vector[1], 99)
-        self.assertEqual(self.vector.size, 4)
+        self.assertEqual(self.vector._size, 4)
 
     def test_str(self):
         # Test string representation
@@ -135,7 +137,7 @@ class TestVector(unittest.TestCase):
 
         # Now, pop elements to potentially trigger shrinking.
         # (Depending on your threshold, this loop should eventually reduce capacity.)
-        while vect.size > 1:
+        while vect._size > 1:
             vect.pop()
         # Check that capacity was reduced. (This isn't a precise check,
         # but assumes that for a very reduced vector, capacity has shrunk.)

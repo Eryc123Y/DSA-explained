@@ -1,6 +1,6 @@
 from typing import TypeVar, Iterator, Generic, Optional, Iterable
 from ctypes import py_object
-from Linear_Structure import Linear_structure
+from .Linear_Structure import Linear_structure
 import unittest
 
 T = TypeVar('T')
@@ -33,16 +33,16 @@ class Array(Linear_structure, Generic[T]):
         self.array = (py_object * self._capacity)()
         for i in range(self._capacity):
             self.array[i] = None
-        self.size = 0
+        self._size = 0
 
         # Populate the array with initial elements, if provided
         if elements is not None:
             for i in range(len(elements)):
                 self.array[i] = elements[i]
-            self.size = len(elements)
+            self._size = len(elements)
 
     def is_full(self) -> bool:
-        return self.size == self._capacity
+        return self._size == self._capacity
 
     def append(self, element: T) -> None:
         """
@@ -50,18 +50,18 @@ class Array(Linear_structure, Generic[T]):
         """
         if self.is_full():
             raise IndexError("Array is full")
-        self.array[self.size] = element
-        self.size += 1
+        self.array[self._size] = element
+        self._size += 1
 
     def pop(self) -> T:
         """
         Removes and returns the last element of the linear structure.
         """
-        if self.size == 0:
+        if self._size == 0:
             raise IndexError("pop from empty array")
-        element = self.array[self.size - 1]
-        self.array[self.size - 1] = None  # Clear the reference instead of using del
-        self.size -= 1
+        element = self.array[self._size - 1]
+        self.array[self._size - 1] = None  # Clear the reference instead of using del
+        self._size -= 1
         return element
 
     def index_of(self, element: T) -> int:
@@ -69,7 +69,7 @@ class Array(Linear_structure, Generic[T]):
         Returns the index of the first occurrence of the element in the linear structure.
         returns -1 if the element is not in the linear structure.
         """
-        for i in range(self.size):
+        for i in range(self._size):
             if self.array[i] == element:
                 return i
         return -1
@@ -81,66 +81,66 @@ class Array(Linear_structure, Generic[T]):
         if self.is_full():
             raise IndexError("Array is full")
         if position < 0:
-            position += self.size
-        if not 0 <= position <= self.size:
+            position += self._size
+        if not 0 <= position <= self._size:
             raise IndexError("Index out of range")
         # Shift elements one position to the right (from the end to index)
-        for i in range(self.size - 1, position - 1, -1):
+        for i in range(self._size - 1, position - 1, -1):
             self.array[i + 1] = self.array[i]
         # Insert the new element
         self.array[position] = element
-        self.size += 1
+        self._size += 1
 
     def __len__(self) -> int:
         """
         Returns the number of elements in the linear structure.
         """
-        return self.size
+        return self._size
 
     def __getitem__(self, subscript: int) -> T:
         if subscript < 0:
-            subscript += self.size
-        if not 0 <= subscript < self.size:
+            subscript += self._size
+        if not 0 <= subscript < self._size:
             raise IndexError("Index out of range")
         return self.array[subscript]
 
     def __setitem__(self, subscript: int, element: T) -> None:
         if subscript < 0:
-            subscript += self.size
-        if not 0 <= subscript < self.size:
+            subscript += self._size
+        if not 0 <= subscript < self._size:
             raise IndexError("Index out of range")
         self.array[subscript] = element
 
     def __delitem__(self, subscript: int) -> None:
         if subscript < 0:
-            subscript += self.size
-        if not 0 <= subscript < self.size:
+            subscript += self._size
+        if not 0 <= subscript < self._size:
             raise IndexError("Index out of range")
         # Shift elements one position to the left (from index to the end)
-        for i in range(subscript, self.size - 1):
+        for i in range(subscript, self._size - 1):
             self.array[i] = self.array[i + 1]
         # Clear the last element and decrease size
-        self.array[self.size - 1] = None
-        self.size -= 1
+        self.array[self._size - 1] = None
+        self._size -= 1
 
     def __contains__(self, element: T) -> bool:
         return self.index_of(element) != -1
     
     def __iter__(self) -> Iterator[T]:
-        for i in range(self.size):
+        for i in range(self._size):
             yield self.array[i]
 
     def __str__(self):
-        return str([self.array[i] for i in range(self.size)])
+        return str([self.array[i] for i in range(self._size)])
 
     def clear(self) -> None:
         for i in range(self._capacity):
             self.array[i] = None
-        self.size = 0
+        self._size = 0
         
     def reverse(self):
-        for i in range(self.size//2):
-            self.array[i], self.array[self.size - i - 1] = self.array[self.size - i - 1], self.array[i]
+        for i in range(self._size // 2):
+            self.array[i], self.array[self._size - i - 1] = self.array[self._size - i - 1], self.array[i]
             
 
 class TestArray(unittest.TestCase):

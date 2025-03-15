@@ -1,6 +1,6 @@
 from typing import TypeVar, Optional, Iterable, Generic, Union, Tuple
-from Vector import Vector
-from Linear_Structure import Linear_structure
+from .Vector import Vector
+from .Linear_Structure import Linear_structure
 import unittest
 
 T = TypeVar('T')
