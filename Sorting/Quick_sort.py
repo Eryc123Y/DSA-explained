@@ -1,4 +1,4 @@
-from typing import TypeVar, Callable, Iterable, Tuple
+from typing import TypeVar, Callable, Iterable, Tuple, Collection
 
 T = TypeVar('T')
 
@@ -12,7 +12,7 @@ def swap(ln_struct: Iterable[T], i: int, j: int) -> None:
     ln_struct[j] = temp
 
 
-def Quick_sort(ln_struct: Iterable[T], key: Callable = lambda x: x, reverse: bool = False) -> None:
+def quick_sort(ln_struct: Iterable[T], key: Callable = lambda x: x, reverse: bool = False) -> None:
     """
     Sorts a linear structure in ascending order using the quick sort algorithm.
 
@@ -104,7 +104,7 @@ def Quick_sort(ln_struct: Iterable[T], key: Callable = lambda x: x, reverse: boo
             i += 1
         return j, i
 
-    def quick_sort(left: int, right: int) -> None:
+    def sort(left: int, right: int) -> None:
         """
         Recursively sorts the list using the quick sort algorithm.
         """
@@ -117,8 +117,54 @@ def Quick_sort(ln_struct: Iterable[T], key: Callable = lambda x: x, reverse: boo
             quick_sort(pivot + 1, right)
 
     # Call the recursive quick_sort function
-    quick_sort(0, len(ln_struct) - 1)
+    sort(0, len(ln_struct) - 1)
     
     
+def naive_quick_select(ln_struct: Collection[T], k: int) -> T:
+    """
+    Finds the k-th smallest element in a linear structure using the quick select algorithm.
 
+    Parameters:
+    ln_struct: Linear structure to be searched.
+    k: Index of the element to be found.
+    """
+    def partition_lumutos(left: int, right: int) -> int:
+        # Choose the rightmost element as the pivot
+        pivot = ln_struct[right]
+        i = left - 1
 
+        # Iterate over the elements from left to right
+        for j in range(left, right):
+            # Compare the keys of the elements
+            if (ln_struct[j] <= pivot):
+                i += 1
+                swap(ln_struct, i, j)
+
+        # Place the pivot element in its correct position
+        swap(ln_struct, i + 1, right)
+        return i + 1
+        
+    
+    def select(left: int, right: int, k: int) -> T:
+        """
+        Recursively finds the k-th smallest element in the list using the quick select algorithm.
+        """
+        if left == right:
+            return ln_struct[left]
+
+        # Partition the list
+        pivot = partition_lumutos(left, right)
+
+        # Recursively search the left or right sublist
+        if k == pivot:
+            return ln_struct[k]
+        elif k < pivot:
+            return select(left, pivot - 1, k)
+        else:
+            return select(pivot + 1, right, k)
+    
+    if not ln_struct:
+        return None
+    if k < 0 or k >= len(ln_struct):
+        raise ValueError('k is out of bounds')
+    return select(0, len(ln_struct) - 1, k)
