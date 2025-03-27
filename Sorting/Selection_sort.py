@@ -1,4 +1,4 @@
-from typing import TypeVar, Callable, Iterable
+from typing import TypeVar, Callable, Iterable, Collection
 
 T = TypeVar('T')
 
@@ -12,7 +12,7 @@ def swap(ln_struct: Iterable[T], i: int, j: int) -> None:
     ln_struct[j] = temp
 
 
-def Selection_sort(ln_struct: Iterable[T], key: Callable = lambda x: x, reverse: bool = False) -> None:
+def Selection_sort(ln_struct: Collection[T], key: Callable = lambda x: x, reverse: bool = False) -> None:
     """
     Sorts a linear structure in ascending order using the selection sort algorithm.
 
