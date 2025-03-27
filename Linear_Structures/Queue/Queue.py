@@ -56,7 +56,10 @@ class Queue(Linear_structure, ABC, Generic[T]):
         """
         return str(self._items)
     
+    @abstractmethod
     def __iter__(self):
-        while not self.is_empty():
-            yield self.dequeue()
-    
+        """
+        This is a reference implementation that concrete classes should override.
+        It creates a temporary copy to avoid modifying the original queue.
+        """
+        pass
