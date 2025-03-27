@@ -11,13 +11,17 @@ class Vector(Array, Generic[T]):
     """
 
     def __init__(self, elements: Optional[Collection[T]] = None):
-        """
-        Initialize a Vector with a list of elements.
-        
-        Parameters:
-            elements (Optional[list[T]]): A list of initial elements to populate the vector.
-        """
-        super().__init__(elements=elements)
+        if elements:
+            capacity = len(elements)
+        else:
+            capacity = 10  # Default capacity
+
+        # Always pass capacity to Array constructor
+        super().__init__(capacity=capacity, elements=elements)
+
+        # Set size based on elements
+        if elements:
+            self._size = len(elements)
 
     def _expand(self) -> None:
         """
