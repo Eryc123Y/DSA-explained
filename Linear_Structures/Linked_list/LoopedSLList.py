@@ -1,4 +1,4 @@
-from typing import TypeVar
+from typing import TypeVar, Iterator
 from .SLList import SLList
 import unittest
 
@@ -6,6 +6,15 @@ T = TypeVar('T')
 
 
 class LoopedSLList(SLList):
+
+    def __init__(self, data: T):
+        """
+        Initialize a looped singly linked list with a list of elements.
+        """
+        super().__init__(data)
+        if not self.is_empty():
+            self.tail.next = self.head
+
     def append(self, element: T) -> None:
         super().append(element)
         self.tail.next = self.head  # Maintain the loop
@@ -28,6 +37,16 @@ class LoopedSLList(SLList):
             result.append(str(current.data))
             current = current.next
         return '[' + ', '.join(result) + ']'
+
+    def __iter__(self) -> Iterator[T]:
+        """Iterate through the looped list exactly once."""
+        if self.is_empty():
+            return
+
+        current = self.head
+        for _ in range(self._size):
+            yield current.data
+            current = current.next
 
 
 class TestLoopedSLList(unittest.TestCase):
