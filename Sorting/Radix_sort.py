@@ -1,15 +1,16 @@
-from typing import TypeVar, Iterable, Callable
+from typing import TypeVar, Callable, Collection
 
 T = TypeVar('T')
 
-def basic_radix_sort_aux(ln_struct: Iterable[int], exp: int) -> Iterable[int]:
+
+def basic_radix_sort_aux(ln_struct: Collection[int], exp: int) -> Collection[int]:
     """
     Auxiliary function for the basic radix sort algorithm
     This is basically the counting sort algorithm for the current digit.
     """
-    count_map = [0] * 10 # initialize the count array
+    count_map = [0] * 10  # initialize the count array
     # count the occurrences of each digit
-    for elem in ln_struct: 
+    for elem in ln_struct:
         count_map[(elem // exp) % 10] += 1
     # calculate the cumulative sum
     for i in range(1, 10):
@@ -24,10 +25,8 @@ def basic_radix_sort_aux(ln_struct: Iterable[int], exp: int) -> Iterable[int]:
         count_map[current_digit] -= 1
     return res
 
-    
 
-
-def basic_radix_sort(ln_struct: Iterable[int], reverse: bool = False) -> Iterable[int]:
+def basic_radix_sort(ln_struct: Collection[int], reverse: bool = False) -> Collection[int]:
     """
     Sorts a linear structure in ascending order using the basic radix sort algorithm.
     The relative order is not preserved for elements with the same value.
@@ -47,9 +46,9 @@ def basic_radix_sort(ln_struct: Iterable[int], reverse: bool = False) -> Iterabl
     if reverse:
         ln_struct.reverse()
     return ln_struct
-    
 
-def radix_sort_aux(ln_struct: Iterable[int], exp: int, base: int, key: Callable) -> Iterable[int]:
+
+def radix_sort_aux(ln_struct: Collection[int], exp: int, base: int, key: Callable) -> Collection[int]:
     """
     Auxiliary function for the radix sort algorithm
     This is basically the counting sort algorithm for the current digit.
@@ -61,7 +60,7 @@ def radix_sort_aux(ln_struct: Iterable[int], exp: int, base: int, key: Callable)
     key: Function that returns the key used to sort the elements.
     
     """
-    map = [0] * base # initialize the count array
+    map = [0] * base  # initialize the count array
     # count the occurrences of each digit
     for elem in ln_struct:
         digit = (key(elem) // exp) % base
@@ -79,9 +78,10 @@ def radix_sort_aux(ln_struct: Iterable[int], exp: int, base: int, key: Callable)
         map[digit] -= 1
     return res
 
-def radix_sort(ln_struct: Iterable[int], 
-               base: int, reverse:bool = False, 
-               key: Callable = lambda x: x) -> Iterable[int]:
+
+def radix_sort(ln_struct: Collection[int],
+               base: int, reverse: bool = False,
+               key: Callable = lambda x: x) -> Collection[int]:
     """
     Sorts a linear structure in ascending order using the radix sort algorithm.
     The relative order is not preserved for elements with the same value.
@@ -102,7 +102,7 @@ def radix_sort(ln_struct: Iterable[int],
     offset = 0
     if min_val < 0:
         offset = abs(min_val)
-    
+
     shifted_arr = [elem + offset for elem in ln_struct]
     max_val = max(shifted_arr)
     # now we can sort the shifted array as in the normal case
@@ -110,7 +110,7 @@ def radix_sort(ln_struct: Iterable[int],
     while max_val // exp > 0:
         shifted_arr = radix_sort_aux(shifted_arr, exp, base, key)
         exp *= base
-    
+
     # we need to restore the value before offsetting for integrity
     result = [elem - offset for elem in shifted_arr]
     if reverse:
@@ -131,24 +131,24 @@ def counting_sort_by_char(strings: list[str], position: int) -> list[str]:
     """
     # ASCII has 256 possible characters
     count = [0] * 257  # 256 for ASCII chars + 1 for "no character" (shorter strings)
-    
+
     # Count occurrences
     for s in strings:
         # If string is shorter than position, use 0 (comes before any char)
         char_val = ord(s[position]) if position < len(s) else 0
         count[char_val + 1] += 1  # +1 offset to reserve 0 for shorter strings
-    
+
     # Calculate cumulative counts
     for i in range(1, 257):
         count[i] += count[i - 1]
-    
+
     # Build the sorted array
     result = [None] * len(strings)
     for s in reversed(strings):  # Process in reverse for stability
         char_val = ord(s[position]) if position < len(s) else 0
         result[count[char_val]] = s
         count[char_val] += 1
-    
+
     return result
 
 
@@ -165,17 +165,17 @@ def radix_sort_strings(strings: list[str], reverse: bool = False) -> list[str]:
     """
     if not strings:
         return []
-    
+
     # Find maximum string length
     max_length = max(len(s) for s in strings)
-    
+
     # Counting sort for each character position, starting from rightmost
     for position in range(max_length - 1, -1, -1):
         strings = counting_sort_by_char(strings, position)
-    
+
     if reverse:
         strings.reverse()
-    
+
     return strings
 
 
@@ -197,7 +197,7 @@ def radix_sort_strings_optimized(strings: list[str], reverse: bool = False) -> l
     """
     if not strings:
         return []
-    
+
     # Group strings by length
     length_groups = {}
     for s in strings:
@@ -205,26 +205,26 @@ def radix_sort_strings_optimized(strings: list[str], reverse: bool = False) -> l
         if length not in length_groups:
             length_groups[length] = []
         length_groups[length].append(s)
-    
+
     # Sort each length group separately
     result = []
     lengths = sorted(length_groups.keys(), reverse=reverse)
-    
+
     for length in lengths:
         group = length_groups[length]
-        
+
         # Optimization: If only one string of this length, no need to sort
         if len(group) <= 1:
             result.extend(group)
             continue
-        
+
         # Apply radix sort to this group
         # Process characters from right to left (MSD radix sort)
         for position in range(length - 1, -1, -1):
             group = counting_sort_by_char_optimized(group, position)
-        
+
         result.extend(group)
-    
+
     return result
 
 
@@ -235,24 +235,25 @@ def counting_sort_by_char_optimized(strings: list[str], position: int) -> list[s
     """
     # ASCII has 256 possible characters
     count = [0] * 256
-    
+
     # Count occurrences
     for s in strings:
         char_val = ord(s[position])
         count[char_val] += 1
-    
+
     # Calculate cumulative counts
     for i in range(1, 256):
         count[i] += count[i - 1]
-    
+
     # Build the sorted array
     result = [None] * len(strings)
     for s in reversed(strings):  # Process in reverse for stability
         char_val = ord(s[position])
         count[char_val] -= 1
         result[count[char_val]] = s
-    
+
     return result
+
 
 # test the radix sort
 def main():
@@ -268,6 +269,7 @@ def main():
     ln_struct = [170, 45, 75, 90, 802, 24, 2, 66, -1, -2, -3]
     print(radix_sort(ln_struct, 16))
     print(radix_sort(ln_struct, 16, reverse=True))
+
 
 if __name__ == "__main__":
     main()
