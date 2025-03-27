@@ -1,65 +1,54 @@
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic
-from ..Linear_Structure import Linear_structure
-
+from typing import TypeVar, Generic, Iterator, Optional, Collection
+from ..Vector import Vector
 T = TypeVar('T')
 
-class Queue(Linear_structure, ABC, Generic[T]):
+
+class Queue(ABC, Generic[T]):
     """
     Abstract class for queues.
     """
 
+    def __init__(self) -> None:
+        self._size = 0
+
+    def is_empty(self) -> bool:
+        """Returns True if the queue is empty."""
+        return self._size == 0
+
+    def size(self) -> int:
+        """Returns the number of items in the queue."""
+        return self._size
+
+    def __len__(self) -> int:
+        """Returns the number of items in the queue."""
+        return self._size
+
+    def __str__(self) -> str:
+        """Default string representation using iteration."""
+        return str([item for item in self])
+
     @abstractmethod
     def enqueue(self, item: T) -> None:
-        """
-        Enqueues an item to the queue.
-        """
+        """Adds an item to the queue."""
         pass
 
     @abstractmethod
     def dequeue(self) -> T:
-        """
-        Dequeues an item from the queue.
-        """
+        """Removes and returns the front item from the queue."""
         pass
 
     @abstractmethod
     def peek(self) -> T:
-        """
-        Returns the front item from the queue.
-        """
+        """Returns the front item without removing it."""
         pass
-    
+
     @abstractmethod
-    def is_empty(self) -> bool:
-        """
-        Returns True if the queue is empty, False otherwise.
-        """
+    def clear(self) -> None:
+        """Removes all items from the queue."""
         pass
-    
+
     @abstractmethod
-    def size(self) -> int:
-        """
-        Returns the number of items in the queue.
-        """
-        pass
-    
-    
-    def __len__(self):
-        return self.size()
-    
-    
-    @abstractmethod
-    def __str__(self):
-        """
-        Returns a string representation of the queue.
-        """
-        return str(self._items)
-    
-    @abstractmethod
-    def __iter__(self):
-        """
-        This is a reference implementation that concrete classes should override.
-        It creates a temporary copy to avoid modifying the original queue.
-        """
+    def __iter__(self) -> Iterator[T]:
+        """Returns an iterator for the queue."""
         pass
