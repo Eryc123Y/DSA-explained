@@ -11,17 +11,22 @@ class List_stack(Stack, Generic[T]):
     Stack class implemented using a list (vector).
     """
 
+    def __len__(self) -> int:
+        """
+        Returns the number of items in the stack.
+        """
+        return len(self.stack)
+
     def __init__(self, elements: Optional[Collection[T]] = None) -> None:
         """
         Initializes a stack with an optional iterable.
         We treat the rhs as the top
         """
-        super().__init__()
         # Initialize with a non-empty Vector to ensure it has capacity
         if elements is None:
             # Use a dummy element to create capacity, then remove it
-            self.stack = Vector([None])
-            self.stack.pop()
+            self.stack = Vector()
+            self._size = 0
         else:
             self.stack = Vector(elements)
             self._size = len(elements)
@@ -51,33 +56,6 @@ class List_stack(Stack, Generic[T]):
             raise IndexError("peek from empty stack")
         return self.stack[-1]
 
-    def append(self, element: T) -> None:
-        return self.push(element)
-
-    def index_of(self, element: T) -> int:
-        for i in range(self._size):
-            if self.stack[i] == element:
-                return i
-        return -1
-
-    def insert(self, position: int, element: T) -> None:
-        raise NotImplementedError("Insert method is not supported in stacks.")
-
-    def __len__(self) -> int:
-        return len(self.stack)
-
-    def __getitem__(self, index: int) -> T:
-        return self.stack[index]
-
-    def __setitem__(self, index: int, element: T) -> None:
-        raise NotImplementedError("Insert method is not supported in stacks.")
-
-    def __delitem__(self, index: int) -> None:
-        raise NotImplementedError("Delete method is not supported in stacks.")
-
-    def __iter__(self) -> Iterator[T]:
-        return iter(self.stack)
-
     def __contains__(self, element: T) -> bool:
         return element in self.stack
 
@@ -90,9 +68,6 @@ class List_stack(Stack, Generic[T]):
         """
         self.stack.clear()
         self._size = 0
-
-    def reverse(self) -> None:
-        self.stack.reverse()
 
 
 class TestListStack(unittest.TestCase):
@@ -147,36 +122,6 @@ class TestListStack(unittest.TestCase):
         self.assertEqual(stack.pop(), 1)
         self.assertTrue(stack.is_empty())
 
-    def test_append(self):
-        self.empty_stack.append(1)
-        self.assertEqual(len(self.empty_stack), 1)
-        self.assertEqual(self.empty_stack.peek(), 1)
-
-    def test_index_of(self):
-        self.assertEqual(self.stack.index_of(1), 0)
-        self.assertEqual(self.stack.index_of(2), 1)
-        self.assertEqual(self.stack.index_of(3), 2)
-        self.assertEqual(self.stack.index_of(4), -1)
-
-    def test_unsupported_operations(self):
-        with self.assertRaises(NotImplementedError):
-            self.stack.insert(0, 4)
-
-        with self.assertRaises(NotImplementedError):
-            self.stack[0] = 4
-
-        with self.assertRaises(NotImplementedError):
-            del self.stack[0]
-
-    def test_getitem(self):
-        self.assertEqual(self.stack[0], 1)
-        self.assertEqual(self.stack[1], 2)
-        self.assertEqual(self.stack[2], 3)
-
-    def test_iter(self):
-        items = [item for item in self.stack]
-        self.assertEqual(items, [1, 2, 3])
-
     def test_contains(self):
         self.assertTrue(1 in self.stack)
         self.assertTrue(2 in self.stack)
@@ -190,11 +135,6 @@ class TestListStack(unittest.TestCase):
         self.stack.clear()
         self.assertEqual(len(self.stack), 0)
         self.assertTrue(self.stack.is_empty())
-
-    def test_reverse(self):
-        self.stack.reverse()
-        self.assertEqual(str(self.stack), "[3, 2, 1]")
-        self.assertEqual(self.stack.peek(), 1)
 
 
 if __name__ == '__main__':

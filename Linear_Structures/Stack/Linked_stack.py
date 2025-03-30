@@ -8,6 +8,12 @@ T = TypeVar('T')
 
 class Linked_stack(Stack[T], Generic[T]):
 
+    def is_empty(self) -> bool:
+        """
+        Returns True if the stack is empty, False otherwise.
+        """
+        return self._size == 0
+
     def __init__(self, elems: Optional[Collection[T]] = None) -> None:
         """
         Initializes a stack with an optional iterable.
