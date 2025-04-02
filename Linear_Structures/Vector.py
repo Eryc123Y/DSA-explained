@@ -83,7 +83,7 @@ class Vector(Array, Generic[T]):
         Returns True if two vectors are equal.
         """
         if not isinstance(other, Vector):
-            return NotImplemented
+            raise TypeError("Comparison not supported between instances of 'Vector' and '{}'".format(type(other)))
         if self._size != other._size:
             return False
         for i in range(self._size):
