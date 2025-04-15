@@ -20,5 +20,5 @@ class Vertex(Generic[V]):
 
     def __eq__(self, other) -> bool:
         if isinstance(other, Vertex):
-            return self._label == other._label
+            return self._label == other._label and self._neighbors == other._neighbors
         return False
